@@ -12,7 +12,6 @@ public class UserResponseDto {
     private String id;
     private String userName;
     private String email;
-    private String token;
     @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
     private LocalDateTime createTime;
     @JsonFormat(pattern = "yyyy.MM.dd HH:mm")

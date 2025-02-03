@@ -1,17 +1,17 @@
 package com.example.schedulemanager.schedule.service;
 
-import com.example.schedulemanager.schedule.dto.ScheduleRequestDto;
-import com.example.schedulemanager.schedule.dto.ScheduleResponseDto;
+import com.example.schedulemanager.common.dto.ResponseDto;
+import com.example.schedulemanager.schedule.dto.request.AllSchedulesRequestDto;
+import com.example.schedulemanager.schedule.dto.request.ScheduleRequestDto;
+import com.example.schedulemanager.schedule.dto.response.PagingResponseDto;
+import com.example.schedulemanager.schedule.dto.response.ScheduleResponseDto;
 import com.example.schedulemanager.schedule.entity.Schedule;
+import com.example.schedulemanager.schedule.exception.ScheduleNotFoundException;
+import com.example.schedulemanager.schedule.exception.SchedulePermissionDeniedException;
 import com.example.schedulemanager.schedule.repository.ScheduleRepository;
 import com.example.schedulemanager.user.dto.CustomUserDetails;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -23,27 +23,22 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
     @Override
-    public List<ScheduleResponseDto> getAllSchedules() {
-        List<Schedule> scheduleList = scheduleRepository.getAllSchedules();
-        List<ScheduleResponseDto> scheduleResponseDtoList = new ArrayList<>();
-        for (Schedule schedule : scheduleList) {
-            scheduleResponseDtoList.add(
-                    new ScheduleResponseDto(schedule)
-            );
-        }
-        return scheduleResponseDtoList;
+    public ResponseDto<PagingResponseDto> getAllSchedules(AllSchedulesRequestDto dto) {
+        PagingResponseDto response = scheduleRepository.getAllSchedules(dto, dto.getPageable());
+        return ResponseDto.success(response);
+
     }
 
     @Override
-    public ScheduleResponseDto getScheduleById(Long id) {
+    public ResponseDto<ScheduleResponseDto> getScheduleById(Long id) {
         Schedule schedule = scheduleRepository.getScheduleByIdOrElseThrow(id);
-        return new ScheduleResponseDto(schedule);
+        return ResponseDto.success(new ScheduleResponseDto(schedule));
     }
 
 
 
     @Override
-    public ScheduleResponseDto createSchedule(ScheduleRequestDto scheduleRequestDto) {
+    public ResponseDto<ScheduleResponseDto> createSchedule(ScheduleRequestDto scheduleRequestDto) {
         Schedule schedule = new Schedule(
                 null,
                 scheduleRequestDto.getTodo(),
@@ -54,41 +49,42 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         schedule = scheduleRepository.saveSchedule(schedule);
 
-        return new ScheduleResponseDto(schedule);
+        return ResponseDto.success(new ScheduleResponseDto(schedule));
     }
 
     @Override
-    public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
+    public ResponseDto<ScheduleResponseDto> updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
 
         Schedule schedule = scheduleRepository.getScheduleByIdOrElseThrow(id);
 
         if (!schedule.getAuthorId().equals(getCurrentUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "수정 권한이 없습니다.");
+            throw new SchedulePermissionDeniedException();
         }
 
         schedule.setTodo(scheduleRequestDto.getTodo());
 
         int updatedRow = scheduleRepository.updateSchedule(schedule);
         if(updatedRow == 0){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
+            throw new ScheduleNotFoundException();
         }
         schedule = scheduleRepository.getScheduleByIdOrElseThrow(id);
-        return new ScheduleResponseDto(schedule);
+        return ResponseDto.success(new ScheduleResponseDto(schedule));
     }
 
     @Override
-    public void deleteSchedule(Long id) {
+    public ResponseDto<String> deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.getScheduleByIdOrElseThrow(id);
 
         if (!schedule.getAuthorId().equals(getCurrentUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
+            throw new SchedulePermissionDeniedException();
         }
 
 
         int deletedRow = scheduleRepository.deleteScheduleById(id);
         if(deletedRow == 0){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
+            throw new ScheduleNotFoundException();
         }
+        return ResponseDto.success("일정이 성공적으로 삭제되었습니다.");
     }
 
     private String getCurrentUserId() {

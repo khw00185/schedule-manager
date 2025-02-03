@@ -1,4 +1,4 @@
-package com.example.schedulemanager.schedule.dto;
+package com.example.schedulemanager.schedule.dto.response;
 
 import com.example.schedulemanager.schedule.entity.Schedule;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ScheduleResponseDto {
     private Long id;
-    private String title;
     private String todo;
     private String authorId;
     private LocalDateTime createTime;

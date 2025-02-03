@@ -1,7 +1,8 @@
 package com.example.schedulemanager.user.jwt;
 
 import com.example.schedulemanager.user.dto.CustomUserDetails;
-import com.example.schedulemanager.user.repository.UserRepository;
+import com.example.schedulemanager.user.exception.ExpriredJwtToken;
+import com.example.schedulemanager.user.exception.InvalidTokenFormatException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +18,14 @@ import java.io.IOException;
 @AllArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
-    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        if (requestURI.equals("/api/users/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String authorization= request.getHeader("Authorization");
 
@@ -28,10 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
             System.out.println("token null");
-            filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
-            return;
+            throw new InvalidTokenFormatException();
         }
 
         System.out.println("authorization now");
@@ -42,17 +44,15 @@ public class JWTFilter extends OncePerRequestFilter {
         if (jwtUtil.isExpired(token)) {
 
             System.out.println("token expired");
-            filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
-            return;
+            throw new ExpriredJwtToken();
         }
 
         String id = jwtUtil.getid(token);
 
 
+
         //UserDetails에 회원 정보 객체 담기
-        CustomUserDetails customUserDetails = new CustomUserDetails(id);
+        CustomUserDetails customUserDetails = new CustomUserDetails(id, null);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());

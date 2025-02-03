@@ -10,6 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private final String id;
+    private final String password;
+
 
 //사용자에게 어떤 권한을 반환할것인지를 정하는 메서드
     @Override
@@ -28,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
