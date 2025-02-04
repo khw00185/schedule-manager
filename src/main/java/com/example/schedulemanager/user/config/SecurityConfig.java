@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -62,6 +63,7 @@ public class SecurityConfig{
         http.httpBasic(HttpBasicConfigurer::disable);
         http.authorizeHttpRequests((auth)-> auth
                 .requestMatchers("/api/users/login", "/api/users/logout", "/api/users/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/schedules/**").permitAll()
                 .anyRequest().authenticated());
         http.sessionManagement((session)-> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
