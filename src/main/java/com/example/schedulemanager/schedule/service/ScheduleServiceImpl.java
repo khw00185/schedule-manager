@@ -26,7 +26,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ResponseDto<PagingResponseDto> getAllSchedules(AllSchedulesRequestDto dto) {
         PagingResponseDto response = scheduleRepository.getAllSchedules(dto, dto.getPageable());
         return ResponseDto.success(response);
-
     }
 
     @Override
