@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ResponseDto.fail(errorReason), errorReason.getStatus());
     }
 
-
+ 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDto<?>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         throw new CustomException(CommonErrorCode.INVALID_INPUT_VALUE);
