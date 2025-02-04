@@ -19,10 +19,15 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/api/users/login")) {
+        String method = request.getMethod();
+        if (requestURI.equals("/api/users/login") ||
+                requestURI.equals("/api/users/register") ||
+                (method.equals("GET") && requestURI.startsWith("/api/schedules"))) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -62,7 +62,7 @@ public class SecurityConfig{
         http.formLogin(FormLoginConfigurer::disable);
         http.httpBasic(HttpBasicConfigurer::disable);
         http.authorizeHttpRequests((auth)-> auth
-                .requestMatchers("/api/users/login", "/api/users/logout", "/api/users/register").permitAll()
+                .requestMatchers("/api/users/login", "/api/users/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/schedules/**").permitAll()
                 .anyRequest().authenticated());
         http.sessionManagement((session)-> session
