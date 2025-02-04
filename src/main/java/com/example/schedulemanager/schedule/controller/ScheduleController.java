@@ -21,7 +21,7 @@ public class ScheduleController {
             @RequestParam(required = false) String modifiedDateStart,
             @RequestParam(required = false) String modifiedDateEnd,
             @RequestParam(required = false) String authorId,
-            @RequestParam int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         AllSchedulesRequestDto dto = new AllSchedulesRequestDto(modifiedDateStart, modifiedDateEnd, authorId, page, size);

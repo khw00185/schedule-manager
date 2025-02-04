@@ -5,6 +5,7 @@ import com.example.schedulemanager.user.dto.LoginRequestDto;
 import com.example.schedulemanager.user.exception.RequestBodyReadException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -64,7 +65,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication){
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)throws IOException, ServletException {
         System.out.println("Login successful, generating JWT...");
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String id = userDetails.getUsername(); //getUsername()이지만 id를 반환하는 메서드임 ㅎㅎ..
@@ -72,6 +73,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createJwt(id, 60 * 60 * 2 * 1000L);
 
         response.addHeader("Authorization", "Bearer " + token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // 응답 메시지 객체를 JSON 형식으로 변환
+        String responseMessage = "{ \"message\": \"로그인이 완료되었습니다.\" }";
+        response.getWriter().write(responseMessage);
+        //chain.doFilter(request, response); 컨트롤러까지 로그인 요청이 안닿고 있음. JWTFilter로 넘어가면서 403 forbidden이 자꾸 일어남.. 왜지 핵폭탄 부수고 싶다.
 
     }
 

@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDto<UserResponseDto> login(UserLoginRequestDto dto) {
-
+        System.out.println("이게 떠야 login서비스가 동작한것임");
         User user = userRepository.findById(dto.getId())
                 .orElseThrow(InvalidUserIdException::new);
 
@@ -54,7 +54,6 @@ public class UserServiceImpl implements UserService {
 
         UserResponseDto responseDto = new UserResponseDto(user.getId(), user.getUserName(), user.getEmail(),
                 user.getCreatedAt(), user.getUpdatedAt());
-
         return ResponseDto.success(responseDto);
     }
 

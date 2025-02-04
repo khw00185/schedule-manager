@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<?>> login(@Valid @RequestBody UserLoginRequestDto dto) {
-
+        System.out.println("로그인 요청 받음");
         return ResponseEntity.ok(userService.login(dto));
     }
 

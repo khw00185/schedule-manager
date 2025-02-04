@@ -28,6 +28,7 @@ public class JWTFilter extends OncePerRequestFilter {
         if (requestURI.equals("/api/users/login") ||
                 requestURI.equals("/api/users/register") ||
                 (method.equals("GET") && requestURI.startsWith("/api/schedules"))) {
+
             filterChain.doFilter(request, response);
             return;
         }
