@@ -28,7 +28,8 @@ public enum CommonErrorCode implements BaseErrorCode {
     InvalidTokenFormat(HttpStatus.BAD_REQUEST, "AUTH_002", "잘못된 형식의 토큰입니다."),
 
     //요청 관련
-    RequestBodyRead(HttpStatus.BAD_REQUEST, "REQUEST_001", "요청 본문을 읽는 중 오류가 발생했습니다.");
+    RequestBodyRead(HttpStatus.BAD_REQUEST, "REQUEST_001", "요청 본문을 읽는 중 오류가 발생했습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "REQUEST_002", "입력값이 유효하지 않습니다.");
 
     private final HttpStatus status;
     private final String code;
