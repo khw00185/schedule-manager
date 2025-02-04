@@ -9,6 +9,7 @@ import lombok.Getter;
 public class CustomException extends RuntimeException {
     private final BaseErrorCode code;
 
+
     public ErrorReason getErrorReason() {
         return this.code.getErrorReason();
     }

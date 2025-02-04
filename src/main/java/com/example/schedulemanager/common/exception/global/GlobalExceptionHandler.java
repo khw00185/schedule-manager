@@ -20,9 +20,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ResponseDto.fail(errorReason), errorReason.getStatus());
     }
 
- 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDto<?>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        throw new CustomException(CommonErrorCode.INVALID_INPUT_VALUE);
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .orElse("입력값이 유효하지 않습니다.");
+
+        return ResponseEntity.badRequest().body(ResponseDto.fail("REQUEST_002", errorMessage));
     }
 }
