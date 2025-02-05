@@ -1,19 +1,21 @@
 package com.example.schedulemanager.user.jwt;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JWTUtil {
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
+
     public JWTUtil(@Value("${jwt.secret}") String secret) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        byte[] decodedKey = Base64.getDecoder().decode(secret.getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(decodedKey);
     }
 
     public String getid(String token) {

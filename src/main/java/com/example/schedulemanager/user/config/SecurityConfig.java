@@ -1,5 +1,6 @@
 package com.example.schedulemanager.user.config;
 
+import com.example.schedulemanager.user.jwt.CachedBodyFilter;
 import com.example.schedulemanager.user.jwt.JWTFilter;
 import com.example.schedulemanager.user.jwt.JWTUtil;
 import com.example.schedulemanager.user.jwt.LoginFilter;
@@ -68,6 +69,7 @@ public class SecurityConfig{
         http.sessionManagement((session)-> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        http.addFilterBefore(new CachedBodyFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManagerBean(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
         return http.build();
