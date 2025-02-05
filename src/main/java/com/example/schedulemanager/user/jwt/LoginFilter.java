@@ -1,5 +1,6 @@
 package com.example.schedulemanager.user.jwt;
 
+import com.example.schedulemanager.common.dto.ResponseDto;
 import com.example.schedulemanager.user.dto.CustomUserDetails;
 import com.example.schedulemanager.user.dto.UserLoginRequestDto;
 import com.example.schedulemanager.user.exception.AttemptAuthenticationException;
@@ -49,14 +50,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)throws IOException, ServletException {
-        System.out.println("Login successful, generating JWT...");
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String id = userDetails.getUsername(); //getUsername()이지만 id를 반환하는 메서드임 ㅎㅎ..
 
         String token = jwtUtil.createJwt(id, 60 * 60 * 2 * 1000L);
 
         response.addHeader("Authorization", "Bearer " + token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
+        ResponseDto<String> responseDto = ResponseDto.success("로그인이 완료되었습니다.");
+
+        String responseBody = new ObjectMapper().writeValueAsString(responseDto);
+
+        response.getWriter().write(responseBody);
     }
 
     @Override
